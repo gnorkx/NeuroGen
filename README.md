@@ -1,0 +1,2 @@
+# NeuroGen
+Growing neural net
