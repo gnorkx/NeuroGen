@@ -31,6 +31,14 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="net/connection.cpp" />
+		<Unit filename="net/connection.h" />
+		<Unit filename="net/definitions.h" />
+		<Unit filename="net/neuron.cpp" />
+		<Unit filename="net/neuron.h" />
+		<Unit filename="net/neuronet.cpp" />
+		<Unit filename="net/neuronet.h" />
+		<Unit filename="testing/test.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

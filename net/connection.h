@@ -1,6 +1,7 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
+#include"definitions.h"
 
 class connection
 {
@@ -12,7 +13,9 @@ class connection
 
         int from(){return from_;};
         int to(){return to_;};
-        float getWeight(){return weight_;};
+        float getWeight() const {return weight_;};
+
+
     private:
 
         int from_;
