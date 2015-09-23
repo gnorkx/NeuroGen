@@ -1,14 +1,17 @@
 #include "neuron.h"
+#include"neuronet.h"
 #include<iostream>
 
-neuron::neuron(neuron_type type, std::vector<neuron*>* neurons)
+neuron::neuron(neuron_type type, neuronet& net)
 {
     //ctor
     //std::cout<<"create neuton"<<std::endl;
+    type_       = type;
+    net_        = &net;
+
     sumOfInput_ = 0;
-    nInputs = 0;
-    type_ = type;
-    neurons_ = neurons;
+    nInputs_    = 0;
+    nIncomming_ = 0;
 }
 
 neuron::~neuron()
@@ -20,18 +23,21 @@ neuron::~neuron()
 void neuron::update()
 {
 
-    activation_ = /*activation_fnc(*/ sumOfInput_;// );
-    std::cout<<activation_<<std::endl;
+    if(type_ == inactive) return;
+   // std::cout<<"sum: "<< sumOfInput_<<std::endl;
+    activation_ = activation_fnc( sumOfInput_ );
+
 
     if(type_ != neuron_type::output)
     {
         for( auto &connec : connections_)
         {
-            (*neurons_)[connec->to()]->addInput(connec->getWeight()*activation_);
+            net_->getNeuronFix(connec->to())->addInput(connec->getWeight()*activation_);
+   //         std::cout<<type_<< ": "<<connec->getWeight()*activation_<<" pushed to "<<connec->to()<<std::endl;
         }
     }
     sumOfInput_ = 0;
-    nInputs = 0;
+    nInputs_ = 0;
 
 }
 
@@ -44,4 +50,14 @@ double neuron::activation_fnc( double x ) const
 bool neuron::hasConnectionTo(uint to) const {
     return std::any_of(connections_.begin(), connections_.end(),
         [=](connection* c){ return c->to() == to; });
+}
+
+connection* neuron::getConnectionTo(uint idx)
+{
+    for(auto &c : connections_)
+    {
+        if(c->to() == idx)
+            return c;
+    }
+    return nullptr;
 }

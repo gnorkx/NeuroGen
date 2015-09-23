@@ -9,18 +9,20 @@ class connection
         connection();
         connection(int from, int to, float weight):from_(from), to_(to), weight_(weight){};
 
+        //set
+        void setWeight(double weight){weight_=weight;};
         //Get
 
-        int from(){return from_;};
-        int to(){return to_;};
-        float getWeight() const {return weight_;};
+        uint from(){return from_;};
+        uint to(){return to_;};
+        double getWeight() const {return weight_;};
 
 
     private:
 
-        int from_;
-        int to_;
-        float weight_;
+        uint from_;
+        uint to_;
+        double weight_;
 };
 
 #endif // CONNECTION_H

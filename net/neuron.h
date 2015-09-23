@@ -7,30 +7,37 @@
 
 #include"connection.h"
 
+
+class neuronet;
+
 enum neuron_type {inactive,standard,input,output};
 
 
 class neuron
 {
     public:
-        neuron(neuron_type, std::vector<neuron*>* );
+        neuron(neuron_type, neuronet& );
         virtual ~neuron();
 
         void update();
 
-        void addInput(double in ) {sumOfInput_ += in; nInputs++;};
+        void addInput(double in ) {sumOfInput_ += in; nInputs_++;};
 
         //Get
         neuron_type getType( void ) const {return type_;};
         double getActivation( void ) const {return activation_;};
         std::vector<connection*>* getConnections(){return &connections_;};
+        uint getIncomming() const {return nIncomming_;};
+        connection* getConnectionTo(uint);
+
 
         bool hasConnectionTo(uint) const;
 
 
         //Set
         void setType(neuron_type type){type_=type;};
-        void setNeurons(std::vector<neuron*>* neurons){neurons_ = neurons;}
+        void addIncomming(){nIncomming_++; if(connections_.size()&&!type_) type_=standard;};
+        void removeIncomming(){nIncomming_--; if(!nIncomming_) type_=inactive;}
 
 
     private:
@@ -38,14 +45,15 @@ class neuron
         double activation_fnc(double) const;
 
         std::vector<connection*> connections_;
-        std::vector<neuron*>* neurons_;
+        neuronet* net_;
 
         neuron_type type_;
 
         double activation_;
 
         double sumOfInput_;
-        unsigned nInputs;
+        uint nInputs_; //number of set inputs
+        uint nIncomming_; //number of incomming connections
 
 
 };
