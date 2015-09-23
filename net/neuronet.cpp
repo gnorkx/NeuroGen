@@ -40,6 +40,51 @@ neuronet::neuronet(int nIn, int nOut)
     }
 }
 
+neuronet::neuronet(const neuronet& rhs)
+{
+    nInputs_    = rhs.nInputs_;
+    nOutputs_   = rhs.nOutputs_;
+    nNeurons_   = rhs.nNeurons_;
+
+    outputs_    = new double[nOutputs_];
+
+    neurons_    = new std::vector<neuron*>;
+    for(auto &n : *rhs.neurons_)
+        neurons_->push_back(n->clone());
+
+    connections_= new std::vector<connection*>;
+    for(auto &c : *rhs.connections_)
+    {
+        connection* cNew = c->clone();
+        connections_->push_back(cNew);
+        //the neurons need their connections:
+        getNeuronFix(cNew->from())->getConnections()->push_back(cNew);
+    }
+    neuronDict_ = new std::vector<uint>;
+    for(auto &i : *rhs.neuronDict_)
+        neuronDict_->push_back( i );
+}
+
+neuronet::neuronet(neuronet&& rhs)
+{
+    nInputs_    = rhs.nInputs_;
+    nOutputs_   = rhs.nOutputs_;
+    nNeurons_   = rhs.nNeurons_;
+
+    outputs_    = rhs.outputs_;
+    rhs.outputs_ = nullptr;
+
+    connections_= rhs.connections_;
+    rhs.connections_ = nullptr;
+
+    neurons_= rhs.neurons_;
+    rhs.neurons_ = nullptr;
+
+    neuronDict_= rhs.neuronDict_;
+    rhs.neuronDict_= nullptr;
+
+}
+
 neuronet::~neuronet()
 {
     //dtor

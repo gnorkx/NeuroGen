@@ -13,7 +13,11 @@ class neuronet
 {
     public:
         neuronet(int, int);
+        neuronet(const neuronet&);
+        neuronet(neuronet&&);
         virtual ~neuronet();
+
+
 
 
 
@@ -33,11 +37,15 @@ class neuronet
     void initWeights();
     void mutateWeights();
     void addRandNeuron();
+    void addRandNeuron(uint n){for(uint i=0;i<n;i++) addRandNeuron();};
     int addRandConnection();
+    void addRandConnection(uint n){for(uint i=0;i<n;i++) addRandConnection();};
 
     void print();
     protected:
     private:
+
+    neuronet();
 
     //move to out of class!
     static std::default_random_engine randGen_;

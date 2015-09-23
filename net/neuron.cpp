@@ -61,3 +61,17 @@ connection* neuron::getConnectionTo(uint idx)
     }
     return nullptr;
 }
+
+
+neuron* neuron::clone() const
+{
+    neuron* n       = new neuron(type_, *net_);
+    //connections dont belong to the neuron but to the net!
+    //for(auto &c : connections_)
+    //   n->connections_.push_back(c);
+    n->activation_  = activation_;
+    n->sumOfInput_  = sumOfInput_;
+    n->nInputs_     = nInputs_;
+    n->nIncomming_  = nIncomming_;
+    return n;
+}

@@ -18,6 +18,9 @@ class connection
         double getWeight() const {return weight_;};
 
 
+        connection* clone() const {return new connection(from_, to_, weight_);};
+
+
     private:
 
         uint from_;

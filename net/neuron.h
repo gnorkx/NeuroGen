@@ -40,6 +40,8 @@ class neuron
         void removeIncomming(){nIncomming_--; if(!nIncomming_) type_=inactive;}
 
 
+        neuron* clone() const;
+
     private:
 
         double activation_fnc(double) const;
