@@ -1,3 +1,6 @@
+*.dependend
+*.cbp
+#
 # Compiled Object files
 *.slo
 *.lo

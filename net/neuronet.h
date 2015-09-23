@@ -41,6 +41,8 @@ class neuronet
     int addRandConnection();
     void addRandConnection(uint n){for(uint i=0;i<n;i++) addRandConnection();};
 
+    neuronet* clone()const{return new neuronet(*this);};
+
     void print();
     protected:
     private:
