@@ -51,6 +51,8 @@ neuronet::neuronet(const neuronet& rhs)
     neurons_    = new std::vector<neuron*>;
     for(auto &n : *rhs.neurons_)
         neurons_->push_back(n->clone());
+    for( auto &n : *neurons_)
+        n->setNet(this);
 
     connections_= new std::vector<connection*>;
     for(auto &c : *rhs.connections_)
@@ -79,6 +81,8 @@ neuronet::neuronet(neuronet&& rhs)
 
     neurons_= rhs.neurons_;
     rhs.neurons_ = nullptr;
+    for( auto &n : *neurons_)
+        n->setNet(this);
 
     neuronDict_= rhs.neuronDict_;
     rhs.neuronDict_= nullptr;
@@ -106,13 +110,13 @@ neuronet::~neuronet()
 double* neuronet::run(double *input)
 {
     for(uint i = 0; i<nInputs_ ;i++)
-        getNeuron(i)->addInput( input[i] );
+        getNeuronFix(i)->addInput( input[i] );
 
     for(auto &n : *neuronDict_)
         getNeuronFix(n)->update();
 
     for(uint i = 0; i< nOutputs_; i++ )
-        outputs_[i] = getNeuron(i + nNeurons_ - nOutputs_)->getActivation();
+        outputs_[i] = getNeuronFix(i + nInputs_)->getActivation();
 
     return outputs_;
 }
@@ -120,9 +124,11 @@ double* neuronet::run(double *input)
 
 int neuronet::addConnection(uint from, uint to, double weight)
 {
+    if(from == to) return -1;
     if(from >= nNeurons_ || to >= nNeurons_) return -1;
     if(from < nInputs_ && to < nInputs_ ) return -1; //no connection between inputs
-    if(from >= nNeurons_ - nOutputs_ && to >= nNeurons_ - nOutputs_ ) return -1; //no connection between outputs
+    if(to == 0) return -1; //bias neuron
+    if(from >= nInputs_ && to >= nInputs_ && from < nInputs_+nOutputs_ && to < nInputs_+nOutputs_) return -1; //no connection between outputs
 
 
     //has connection like c (only weight differs)?
@@ -169,7 +175,7 @@ void neuronet::mutateWeights()
     for(auto &c : *connections_)
     {
         double w = c->getWeight();
-        c->setWeight( gaus_(w,0.1*w) );
+        c->setWeight( gaus_(w,0.1) );
     }
 }
 
@@ -185,24 +191,20 @@ void neuronet::addRandNeuron()
 int neuronet::addRandConnection()
 {
     uint maxCon = nNeurons_*(nNeurons_-1) - nInputs_*(nInputs_-1) - nOutputs_*(nOutputs_-1);
-        std::cout<<maxCon<<"\n";
     if(maxCon<=connections_->size()) return 0;
     if(maxCon<0.5*connections_->size())
     {
         uint from, to;
+        uint cnt = 0;
         while(1){
             from = uniform_(0,nNeurons_-1);
-            if(from<nInputs_) to = uniform_(nInputs_,nNeurons_);
-            else if(from>nNeurons_-nOutputs_) to = uniform_(0,nNeurons_-nInputs_);
-            else to = uniform_(0,nNeurons_);
-            if(from==to) continue;
-
-            if(!getNeuronFix(from)->hasConnectionTo(to))
-            {
-                std::cout<<addConnection(from,to,gaus_())<<std::endl;
+            to = uniform_(1,nNeurons_-1);
+            if( addConnection(from,to,gaus_()) > 0 )
                 break;
+            if(cnt++ > 100)
+                {std::cout<<" inf loop\n "; break;}
             }
-        }
+
         return 1;
     }else{
         std::vector<connection*> candidates;
@@ -216,8 +218,15 @@ int neuronet::addRandConnection()
                     candidates.push_back(new connection(i,j,0));
             }
         }
-        uint idx = uniform_(0,candidates.size());
-        std::cout<<addConnection(candidates[idx]->from(), candidates[idx]->to(),gaus_())<<std::endl;
+        uint cnt = 0;
+        while(1)
+        {
+            uint idx = uniform_(0,candidates.size());
+            if( addConnection(candidates[idx]->from(), candidates[idx]->to(),gaus_()) > 0)
+                break;
+            if(cnt++ > 100)
+                {std::cout<<" inf loop2\n "; break;}
+        }
         for(auto &c: candidates)
             delete c;
         return 1;

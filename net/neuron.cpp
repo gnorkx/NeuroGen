@@ -24,8 +24,9 @@ void neuron::update()
 {
 
     if(type_ == inactive) return;
+    if(!nInputs_) return;
    // std::cout<<"sum: "<< sumOfInput_<<std::endl;
-    activation_ = activation_fnc( sumOfInput_ );
+    activation_ = activation_fnc( sumOfInput_/nInputs_ );
 
 
     if(type_ != neuron_type::output)
@@ -43,7 +44,7 @@ void neuron::update()
 
 double neuron::activation_fnc( double x ) const
 {
-    return 1./(1. + exp(-x));
+    return 2./(1. + exp(-x))-1;
 }
 
 

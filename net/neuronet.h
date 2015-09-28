@@ -54,8 +54,8 @@ class neuronet
 
     static std::normal_distribution<double> gausInternal_;
     static double gaus_(){return gausInternal_(randGen_);};
-    static double gaus_(double x, double s){return s*(gaus_()+x);};
-    static double gaus_(double x, double s1, double s2){double g=gaus_(); return (g>0?s2:s1)*(g+x); };
+    static double gaus_(double x, double s){return s*gaus_()+x;};
+    static double gaus_(double x, double s1, double s2){double g=gaus_(); return (g>0?s2:s1)*g+x; };
 
     static std::uniform_real_distribution<double> uniformInternal_;
     static double uniform_(){return uniformInternal_(randGen_);};

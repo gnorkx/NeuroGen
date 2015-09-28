@@ -38,7 +38,7 @@ class neuron
         void setType(neuron_type type){type_=type;};
         void addIncomming(){nIncomming_++; if(connections_.size()&&!type_) type_=standard;};
         void removeIncomming(){nIncomming_--; if(!nIncomming_) type_=inactive;}
-
+        void setNet(neuronet* n){net_ = n;}
 
         neuron* clone() const;
 

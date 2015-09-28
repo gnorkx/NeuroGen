@@ -8,16 +8,18 @@ using namespace std;
 
 int main() {
 
-    neuronet net(2,2);
+    neuronet net2(2,2);
+
+
 
     for(int i = 0; i<5; i++)
-        net.addRandNeuron();
+        net2.addRandNeuron();
 
-    for(int i = 0; i<20; i++)
-        net.addRandConnection();
+    for(int i = 0; i<10; i++)
+        net2.addRandConnection();
 
-    net.initWeights();
-
+    //net2.initWeights();
+    neuronet net(net2);
     net.print();
 
     double in[]={0.5,1};
