@@ -3,6 +3,7 @@
 #include<iomanip>
 #include<iostream>
 
+
 neuronet::neuronet(int nIn, int nOut)
 {
     //ctor
@@ -36,7 +37,7 @@ neuronet::neuronet(int nIn, int nOut)
     for(uint i = 0; i < nInputs_; i++)
     {
         for(uint j = nNeurons_-nOutputs_; j<nNeurons_; j++)
-            addConnection(i,j,1);
+            addConnectionFix(i,j,1);
     }
 }
 
@@ -122,7 +123,7 @@ double* neuronet::run(double *input)
 }
 
 
-int neuronet::addConnection(uint from, uint to, double weight)
+int neuronet::addConnectionFix(uint from, uint to, double weight, bool force)
 {
     if(from == to) return -1;
     if(from >= nNeurons_ || to >= nNeurons_) return -1;
@@ -132,7 +133,12 @@ int neuronet::addConnection(uint from, uint to, double weight)
 
 
     //has connection like c (only weight differs)?
-    if( getNeuronFix(from)->hasConnectionTo( to ) ) return 0;
+    if( getNeuronFix(from)->hasConnectionTo( to ) )
+    {
+        if(!force) return 0;
+        else getNeuronFix(from)->getConnectionTo(to)->setWeight(weight);
+
+    }
 
     connection *c = new connection(from,to,weight);
     connections_->push_back( c );
@@ -199,7 +205,7 @@ int neuronet::addRandConnection()
         while(1){
             from = uniform_(0,nNeurons_-1);
             to = uniform_(1,nNeurons_-1);
-            if( addConnection(from,to,gaus_()) > 0 )
+            if( addConnectionFix(from,to,gaus_()) > 0 )
                 break;
             if(cnt++ > 100)
                 {std::cout<<" inf loop\n "; break;}
@@ -222,7 +228,7 @@ int neuronet::addRandConnection()
         while(1)
         {
             uint idx = uniform_(0,candidates.size());
-            if( addConnection(candidates[idx]->from(), candidates[idx]->to(),gaus_()) > 0)
+            if( addConnectionFix(candidates[idx]->from(), candidates[idx]->to(),gaus_()) > 0)
                 break;
             if(cnt++ > 100)
                 {std::cout<<" inf loop2\n "; break;}
@@ -267,4 +273,21 @@ void neuronet::print()
         std::cout<<"\n";
     }
     std::cout<<std::setprecision(6);
+}
+
+
+double neuronet::getSumOfWeights() const
+{
+    double sum = 0;
+    for(auto &c : *connections_)
+        sum += c->getWeight();
+    return sum;
+}
+
+double neuronet::getSqSumOfWeights() const
+{
+    double sum = 0;
+    for(auto &c : *connections_)
+        sum += pow(c->getWeight(),2);
+    return sum;
 }

@@ -18,16 +18,18 @@ class neuronet
         virtual ~neuronet();
 
 
-
+        int addConnection(uint from, uint to, double w, bool force = false){return addConnectionFix(getFixNeuronId(from),getFixNeuronId(to),w, force);};
 
 
         double* run(double* );
 
 
     uint getFixNeuronId(uint idx) const {return (*neuronDict_)[idx];};
+    double getSumOfWeights() const;
+    double getSqSumOfWeights() const;
 
 
-    int addConnection(uint, uint, double);
+
     int addNeuron(uint);
 
     neuron* getNeuron(uint idx ) {return getNeuronFix( (*neuronDict_)[idx]);};
@@ -48,6 +50,7 @@ class neuronet
     private:
 
     neuronet();
+    int addConnectionFix(uint, uint, double, bool force = false);
 
     //move to out of class!
     static std::default_random_engine randGen_;
